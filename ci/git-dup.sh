@@ -6,7 +6,7 @@ DEPLOY_KEY_FILE="$(pwd)/.id_deploy_key_temp___"
 GIT_REMOTE="target-$(cat /dev/random | LC_CTYPE=C tr -dc "[:alnum:]" | head -c 8; echo)"
 
 usage () {
-    echo "usage: ./git-dup.sh [-h] [-f] <remote>" >&2
+    echo "usage: ./git-dup.sh [-h] [-f] [-b <BRANCH>] <REMOTE>" >&2
     echo >&2
     echo "Pushes current checkout branch to additional repository using an optional temporary deploy key." >&2
     echo "The deploy key needs to have access rights to the additonal repo." >&2
@@ -16,6 +16,7 @@ usage () {
     echo "Options:" >&2
     echo "-h    Show this help" >&2
     echo "-f    Force cleanup" >&2
+    echo "-b    Override branch name" >&2
 }
 
 forceClean () {
@@ -34,10 +35,11 @@ cleanup () {
 # Error handling / finalize
 trap 'cleanup' EXIT
 
-while getopts ":h:f" flag; do
+while getopts "hfb:" flag; do
     case "${flag}" in
         h) usage; exit 2;;
         f) forceClean;;
+        b) echo -e "🚦  Using branch ${OPTARG}" && BRANCH=$OPTARG;;
         *) usage; exit 2;;
     esac
 done
@@ -50,7 +52,7 @@ main () {
   fi
 
   # Preparation
-  BRANCH=`git rev-parse --abbrev-ref HEAD`
+  BRANCH=${BRANCH:-`git rev-parse --abbrev-ref HEAD`}
   
   # Preparation for deploy key
   if [ -f "$DEPLOY_KEY_FILE" ]; then
