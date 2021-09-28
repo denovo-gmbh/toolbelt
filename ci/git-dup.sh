@@ -82,7 +82,7 @@ main () {
   fi
 
   echo "⬆️   Pushing changes"
-  git push -u $GIT_REMOTE $BRANCH
+  git push -u $GIT_REMOTE HEAD:$BRANCH
 }
 
 ( cd . && main "$@" )
