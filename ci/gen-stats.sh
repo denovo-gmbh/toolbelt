@@ -5,6 +5,7 @@ HL='\033[0;34m\033[1m' # Highlight
 NC='\033[0m' # No Color
 OUTPUT_INI=
 OUTPUT_JSON=
+OUTPUT_SH=
 VERSION=`git describe --tags --abbrev=0 2> /dev/null | sed -e 's/-[0-9]*//g' | sed 's/[^0-9.]*//g'`
 export VERSION=${VERSION:-0.0.0}
 AHEAD=`git rev-list "$VERSION"..HEAD --count 2> /dev/null`
@@ -15,21 +16,23 @@ export BRANCH=${BRANCH:-unknown}
 
 # Help
 usage () {
-    echo "usage: source ./gen-stats.sh [-h] [-i] [-j] <FILENAME>" >&2
+    echo "usage: source ./gen-stats.sh [-h] [-i] [-j] [-s] <FILENAME>" >&2
     echo >&2
-    echo "Generate build_stats.* file as JSON or INI. When sourcing bash variables \$VERSION, \$AHEAD, \$COMMIT and \$BRANCH will be exported." >&2
+    echo "Generate build_stats.* file as JSON or INI or SH. When using -s the resulting shell file can be sourced to expose \$VERSION, \$AHEAD, \$COMMIT and \$BRANCH." >&2
     echo "" >&2
     echo "Options:" >&2
     echo "-h    Show this help" >&2
     echo "-i    Write as .ini file" >&2
     echo "-j    Write as .json file" >&2
+    echo "-s    Write as .sh file" >&2
 }
 
-while getopts "hij" flag; do
+while getopts "hijs" flag; do
     case "${flag}" in
         h) usage; exit 0;;
         i) OUTPUT_INI=yes;;
         j) OUTPUT_JSON=yes;;
+        s) OUTPUT_SH=yes;;
         *) usage; exit 0;;
     esac
 done
@@ -61,8 +64,19 @@ main () {
 
   if [ "$OUTPUT_JSON" ]; then
     FILENAME="${@: -1}.json"
-    echo "📝  Writing <$FILENAME> as JSON"
+    echo "🐟  Writing <$FILENAME> as JSON"
     echo "{\"version\":\"$VERSION\",\"ahead\":\"$AHEAD\",\"branch\":\"$BRANCH\",\"commit\":\"$COMMIT\"}" > $FILENAME
+  fi
+
+  if [ "$OUTPUT_SH" ]; then
+    FILENAME="${@: -1}.sh"
+    echo "💲  Writing <$FILENAME> as Shell"
+    echo "#!/bin/sh" > $FILENAME
+    echo "export VERSION=\"$VERSION\"" >> $FILENAME
+    echo "export AHEAD=\"$AHEAD\"" >> $FILENAME
+    echo "export COMMIT=\"$COMMIT\"" >> $FILENAME
+    echo "export BRANCH=\"$BRANCH\"" >> $FILENAME
+    chmod ugo+x $FILENAME
   fi
 }
 
