@@ -11,7 +11,7 @@ export VERSION=${VERSION:-0.0.0}
 AHEAD=`git rev-list "$(git describe --tags --abbrev=0)"..HEAD --count 2> /dev/null`
 export AHEAD=${AHEAD:-"no version found"}
 export COMMIT=`git log --pretty="%H" -n1 HEAD`
-BRANCH=`git branch --remote --verbose --no-abbrev --contains | sed -rne 's/^[^\/]*\/([^\ ]+).*$/\1/p'`
+BRANCH=`git branch --remote --verbose --no-abbrev --contains | sed -rne 's/^[^\/]*\/([^\ ]+).*$/\1/p' | tail -1`
 export BRANCH=${BRANCH:-unknown}
 
 # Help
