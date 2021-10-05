@@ -9,3 +9,4 @@ i.e. for `git-dup.sh`:
 ## GIT
 
  * `git-dup.sh` is used for duplicating source code on multiple remotes
+ * `gen-stats.sh` is used for generating `build_stats.ini` file
