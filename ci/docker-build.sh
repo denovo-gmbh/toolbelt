@@ -38,6 +38,12 @@ main () {
 
   docker build -f $DOCKER_FILE -t $REPOSITORY:$DOCKER_TAG .
   docker push $REPOSITORY:$DOCKER_TAG
+
+  if [[ $LATEST_TAG != $DOCKER_TAG ]]; then
+    echo "🐳  Pushing $LATEST_TAG tag additional to version $DOCKER_TAG"
+    docker image tag $REPOSITORY:$DOCKER_TAG $REPOSITORY:$LATEST_TAG
+    docker push $REPOSITORY:$LATEST_TAG
+  fi
 }
 
 ( cd . && main "$@" )

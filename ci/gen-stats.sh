@@ -13,14 +13,14 @@ export AHEAD=${AHEAD:-"no version found"}
 export COMMIT=`git log --pretty="%H" -n1 HEAD`
 BRANCH=`git branch --remote --verbose --no-abbrev --contains | sed -rne 's/^[^\/]*\/([^\ ]+).*$/\1/p' | tail -1`
 export BRANCH=${BRANCH:-unknown}
-export BRANCH_TAG="$BRANCH-latest"
-BRANCH_TAG=$(echo "$BRANCH_TAG" | tr '[:upper:]' '[:lower:]' | tr \/ -)
-BRANCH_TAG=${BRANCH_TAG//[!a-z0-9\-\.]}
+export LATEST_TAG="$BRANCH-latest"
+LATEST_TAG=$(echo "$LATEST_TAG" | tr '[:upper:]' '[:lower:]' | tr \/ -)
+LATEST_TAG=${LATEST_TAG//[!a-z0-9\-\.]}
 
 # Compute Docker image tag from version or branch name
 TAG=$VERSION
 if [[ ( "$AHEAD" != "0" ) || ( "$VERSION" == "0.0.0" ) ]]; then
-  TAG=$BRANCH_TAG
+  TAG=$LATEST_TAG
 fi
 export TAG=$TAG
 
@@ -61,6 +61,7 @@ main () {
   echo -e "Hash of commit:                   $HL$COMMIT$NC"
   echo -e "Build originates from branch:     $HL$BRANCH$NC"
   echo -e "Docker image tag:                 $HL$TAG$NC"
+  echo -e "Latest tag:                       $HL$LATEST_TAG$NC"
   echo ""
 
   if [ "$OUTPUT_INI" ]; then
@@ -72,12 +73,13 @@ main () {
     echo "VERSION_COMMIT = $COMMIT" >> $FILENAME
     echo "VERSION_BRANCH = $BRANCH" >> $FILENAME
     echo "DOCKER_TAG = $TAG" >> $FILENAME
+    echo "LATEST_TAG = $LATEST_TAG" >> $FILENAME
   fi
 
   if [ "$OUTPUT_JSON" ]; then
     FILENAME="${@: -1}.json"
     echo "🐟  Writing <$FILENAME> as JSON"
-    echo "{\"version\":\"$VERSION\",\"ahead\":\"$AHEAD\",\"branch\":\"$BRANCH\",\"commit\":\"$COMMIT\",\"docker\":\"$TAG\"}" > $FILENAME
+    echo "{\"version\":\"$VERSION\",\"ahead\":\"$AHEAD\",\"branch\":\"$BRANCH\",\"commit\":\"$COMMIT\",\"docker\":\"$TAG\",\"latest\":\"$LATEST_TAG\"}" > $FILENAME
   fi
 
   if [ "$OUTPUT_SH" ]; then
@@ -89,6 +91,7 @@ main () {
     echo "export COMMIT=\"$COMMIT\"" >> $FILENAME
     echo "export BRANCH=\"$BRANCH\"" >> $FILENAME
     echo "export DOCKER_TAG=\"$TAG\"" >> $FILENAME
+    echo "export LATEST_TAG=\"$LATEST_TAG\"" >> $FILENAME
     chmod ugo+x $FILENAME
   fi
 }
