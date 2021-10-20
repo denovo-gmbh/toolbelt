@@ -16,7 +16,7 @@ export BRANCH=${BRANCH:-unknown}
 
 # Compute Docker image tag from version or branch name
 TAG=$VERSION
-if [[ "$AHEAD" != "0" ]]; then
+if [[ ( "$AHEAD" != "0" ) || ( "$VERSION" == "0.0.0" ) ]]; then
   TAG="$BRANCH-latest"
 fi
 TAG=$(echo "$TAG" | tr '[:upper:]' '[:lower:]' | tr \/ -)
