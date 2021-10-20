@@ -13,14 +13,16 @@ export AHEAD=${AHEAD:-"no version found"}
 export COMMIT=`git log --pretty="%H" -n1 HEAD`
 BRANCH=`git branch --remote --verbose --no-abbrev --contains | sed -rne 's/^[^\/]*\/([^\ ]+).*$/\1/p' | tail -1`
 export BRANCH=${BRANCH:-unknown}
+export BRANCH_TAG="$BRANCH-latest"
+BRANCH_TAG=$(echo "$BRANCH_TAG" | tr '[:upper:]' '[:lower:]' | tr \/ -)
+BRANCH_TAG=${BRANCH_TAG//[!a-z0-9\-\.]}
 
 # Compute Docker image tag from version or branch name
 TAG=$VERSION
 if [[ ( "$AHEAD" != "0" ) || ( "$VERSION" == "0.0.0" ) ]]; then
-  TAG="$BRANCH-latest"
+  TAG=$BRANCH_TAG
 fi
-TAG=$(echo "$TAG" | tr '[:upper:]' '[:lower:]' | tr \/ -)
-export TAG=${TAG//[!a-z0-9\-\.]}
+export TAG=$TAG
 
 # Help
 usage () {

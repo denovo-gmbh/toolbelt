@@ -36,8 +36,8 @@ main () {
   echo ""
   echo -e "Repository:                       $HL$REPOSITORY$NC"
 
-  docker build -f $DOCKER_FILE -t $REPOSITORY:$VERSION .
-
+  docker build -f $DOCKER_FILE -t $REPOSITORY:$DOCKER_TAG .
+  docker push $REPOSITORY:$DOCKER_TAG
 }
 
 ( cd . && main "$@" )
