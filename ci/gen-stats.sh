@@ -8,7 +8,7 @@ OUTPUT_JSON=
 OUTPUT_SH=
 VERSION=`git describe --tags --abbrev=0 2> /dev/null | sed -e 's/-[0-9]*//g' | sed 's/[^0-9.]*//g'`
 export VERSION=${VERSION:-0.0.0}
-AHEAD=`git rev-list "$(git describe --tags --abbrev=0)"..HEAD --count 2> /dev/null`
+AHEAD=`git rev-list "$(git describe --tags --abbrev=0 2> /dev/null)"..HEAD --count 2> /dev/null`
 export AHEAD=${AHEAD:-"no version found"}
 export COMMIT=`git log --pretty="%H" -n1 HEAD`
 BRANCH=`git branch --remote --verbose --no-abbrev --contains | sed -rne 's/^[^\/]*\/([^\ ]+).*$/\1/p' | tail -1`
